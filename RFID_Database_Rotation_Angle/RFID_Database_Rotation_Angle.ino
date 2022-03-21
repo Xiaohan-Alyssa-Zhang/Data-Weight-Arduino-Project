@@ -173,12 +173,12 @@ void loop() {
 
   //Create current left and right score list
 
-  int L_R_old[2];
+  
   L_R_old[0] = L_R_new[0];
   L_R_old[1] = L_R_new[1];
 
 
-  int L_R_new[2];
+  
   L_R_new[0] = leftTotal;
   L_R_new[1] = rightTotal;
 
