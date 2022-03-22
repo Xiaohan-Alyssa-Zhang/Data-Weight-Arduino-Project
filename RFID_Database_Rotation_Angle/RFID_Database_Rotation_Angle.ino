@@ -19,8 +19,6 @@ MFRC522 mfrc522[NR_OF_READERS];
 */
 void setup() {
   //Database---item and senario
-  String item_Data[][3] = {{"D9 00 F8 35", "20"}, {"C2 00 F8 11", "60"}, {"A8 02 8H 98", "30"}, {"", "0"}};
-  String senario_Data[][3] = {{"E8 00 F8 35", "10"}, {"B2 00 Y8 11", "30"}, {"F8 02 8H 98", "5"}, {"", "0"}};
   String left_Item_ID = "";
   String right_Item_ID = "";
   String leftt_Senario_ID = "";
@@ -28,14 +26,16 @@ void setup() {
   Serial.begin(9600);           // Initialize serial communications with the PC
   while (!Serial);              // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
   SPI.begin();                  // Init SPI bus
+  
   /* looking for MFRC522 readers */
-  for (uint8_t reader = 0; reader < NR_OF_READERS; reader++) {
-    mfrc522[reader].PCD_Init(ssPins[reader], RST_PIN);
-    Serial.print(F("Reader "));
-    Serial.print(reader);
-    Serial.print(F(": "));
-    mfrc522[reader].PCD_DumpVersionToSerial();
-    //mfrc522[reader].PCD_SetAntennaGain(mfrc522[reader].RxGain_max);
+  for (uint8_t reader = 0; reader < NR_OF_READERS; ++reader)
+  {
+    if (mfrc522[reader].PICC_IsNewCardPresent() && mfrc522[reader].PICC_ReadCardSerial())
+    {
+      printPiccDetails(reader);
+      mfrc522[reader].PICC_HaltA();      // Halt PICC
+      mfrc522[reader].PCD_StopCrypto1(); // Stop encryption on PCD
+    }
   }
 
   //Define the old list and new list [left,right]
@@ -58,94 +58,29 @@ void loop() {
   uint8_t reader1 = 1;
   uint8_t reader2 = 2;
   uint8_t reader3 = 3;
-
+  
   // Looking for new cards
-  // reader0 starts below
-  if (mfrc522[reader0].PICC_IsNewCardPresent() && mfrc522[reader0].PICC_ReadCardSerial()) {
-    Serial.print(F("Reader "));
-    Serial.print(reader0);
+  
+   for (uint8_t reader = 0; reader < NR_OF_READERS; ++reader)
+  {
+    if (mfrc522[reader].PICC_IsNewCardPresent() && mfrc522[reader].PICC_ReadCardSerial())
+    {
+      Serial.print(F("Reader "));
+      Serial.print(reader);
+      // Show some details of the PICC (that is: the tag/card)
+      Serial.print(F(": Card UID:"));
+      String left_Item_ID = dump_byte_array(mfrc522[reader].uid.uidByte, mfrc522[reader].uid.size);
+      Serial.print(left_Item_ID);
+      Serial.println();
 
-    // Show some details of the PICC (that is: the tag/card)
-    Serial.print(F(": Card UID:"));
-    String left_Item_ID = dump_byte_array(mfrc522[reader0].uid.uidByte, mfrc522[reader0].uid.size);
-    Serial.print(left_Item_ID);
-    Serial.println();
-    /*Serial.print(F("PICC type: "));
-      MFRC522::PICC_Type piccType = mfrc522[reader].PICC_GetType(mfrc522[reader].uid.sak);
-      Serial.println(mfrc522[reader].PICC_GetTypeName(piccType));*/
-    // Halt PICC
-    mfrc522[reader0].PICC_HaltA();
-    // Stop encryption on PCD
-    mfrc522[reader0].PCD_StopCrypto1();
-  } //if (mfrc522[reader].PICC_IsNewC..
-
-
-
-  // reader1 starts below
-  if (mfrc522[reader1].PICC_IsNewCardPresent() && mfrc522[reader1].PICC_ReadCardSerial()) {
-    Serial.print(F("Reader "));
-    Serial.print(reader1);
-
-    // Show some details of the PICC (that is: the tag/card)
-    Serial.print(F(": Card UID:"));
-    String right_Item_ID = dump_byte_array(mfrc522[reader1].uid.uidByte, mfrc522[reader1].uid.size);
-    Serial.print(right_Item_ID);
-    Serial.println();
-    /*Serial.print(F("PICC type: "));
-      MFRC522::PICC_Type piccType = mfrc522[reader].PICC_GetType(mfrc522[reader].uid.sak);
-      Serial.println(mfrc522[reader].PICC_GetTypeName(piccType));*/
-    // Halt PICC
-    mfrc522[reader1].PICC_HaltA();
-    // Stop encryption on PCD
-    mfrc522[reader1].PCD_StopCrypto1();
-  } //if (mfrc522[reader].PICC_IsNewC..
-
-
-  // reader2 starts below
-  if (mfrc522[reader2].PICC_IsNewCardPresent() && mfrc522[reader2].PICC_ReadCardSerial()) {
-    Serial.print(F("Reader "));
-    Serial.print(reader2);
-    // Show some details of the PICC (that is: the tag/card)
-    Serial.print(F(": Card UID:"));
-    String left_Senario_ID = dump_byte_array(mfrc522[reader2].uid.uidByte, mfrc522[reader2].uid.size);
-    Serial.print(left_Senario_ID);
-    Serial.println();
-
-    /*Serial.print(F("PICC type: "));
-      MFRC522::PICC_Type piccType = mfrc522[reader].PICC_GetType(mfrc522[reader].uid.sak);
-      Serial.println(mfrc522[reader].PICC_GetTypeName(piccType));*/
-    // Halt PICC
-    mfrc522[reader2].PICC_HaltA();
-    // Stop encryption on PCD
-    mfrc522[reader2].PCD_StopCrypto1();
-  } //if (mfrc522[reader].PICC_IsNewC..
-
-
-
-
-  // reader3 starts below
-  if (mfrc522[reader3].PICC_IsNewCardPresent() && mfrc522[reader3].PICC_ReadCardSerial()) {
-    Serial.print(F("Reader "));
-    Serial.print(reader3);
-    // Show some details of the PICC (that is: the tag/card)
-    Serial.print(F(": Card UID:"));
-    String right_Senario_ID = dump_byte_array(mfrc522[reader3].uid.uidByte, mfrc522[reader3].uid.size);
-    Serial.print(right_Senario_ID);
-    Serial.println();
-
-    /*Serial.print(F("PICC type: "));
-      MFRC522::PICC_Type piccType = mfrc522[reader].PICC_GetType(mfrc522[reader].uid.sak);
-      Serial.println(mfrc522[reader].PICC_GetTypeName(piccType));*/
-    // Halt PICC
-    mfrc522[reader3].PICC_HaltA();
-    // Stop encryption on PCD
-    mfrc522[reader3].PCD_StopCrypto1();
-  } //if (mfrc522[reader].PICC_IsNewC..
-
+      mfrc522[reader0].PICC_HaltA();      // Halt PICC
+      mfrc522[reader0].PCD_StopCrypto1(); // Stop encryption on PCD
+    }
+  }
   ///////////////////////////////////////////
   //Creat database below:
-  String item_Data[][3] = {{"D9 00 F8 35", "20"}, {"C2 00 F8 11", "60"}, {"A8 02 8H 98", "30"}, {"", "0"}};
-  String senario_Data[][3] = {{"E8 00 F8 35", "10"}, {"B2 00 Y8 11", "30"}, {"F8 02 8H 98", "5"}, {"", "0"}};
+  String item_Data[][3] = {{"d90f835","20"}, {"C200F811", "60"}};
+  String senario_Data[][3] = {{"E800F835", "10"}, {"B200Y811", "30"}};
 
   //find item score
   for (int i = 0; i < 3; i++) {
@@ -256,6 +191,20 @@ void loop() {
 /**
    Helper routine to dump a byte array as hex values to Serial.
 */
+void printPiccDetails(uint8_t &readerNum)
+{
+  Serial.print(F("Reader "));
+  Serial.print(readerNum);
+  // Show some details of the PICC (that is: the tag/card)
+  Serial.print(F(": Card UID:"));
+  Serial.println();
+}
+
+String getReaderUidByteAsString(uint8_t &readerNum)
+{
+  return dump_byte_array(mfrc522[readerNum].uid.uidByte, mfrc522[readerNum].uid.size);
+}
+
 String dump_byte_array(byte * buffer, byte bufferSize) {
   String id = "";
   for (byte i = 0; i < bufferSize; i++) {
