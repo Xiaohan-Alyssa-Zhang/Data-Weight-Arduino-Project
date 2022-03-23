@@ -19,8 +19,8 @@ String right_Item_ID= "";
 String left_Senario_ID= "";
 String right_Senario_ID= "";
 
-String item_Database[][6] = {{"d90f835","20"}, {"C200F811", "60"}};
-String senario_Database[][12] = {{"33DDC509", "10"}, {"33CC8308", "30"}};
+String item_Database[][2] = {{"33ddc59","20"}, {"33cc838", "60"}};
+String senario_Database[][2] = {{"33ddc59", "20"}, {"33cc838", "60"}};
 
 
 
@@ -84,7 +84,7 @@ void setup() {
   myStepper.setSpeed(60);
   // initialize the serial port:
   
-////////////////////////////Motor Stepper///////////////////////////////////////////
+////////////////////////////Motor Stepper///////////////////////////////
 }
 
 /*
@@ -100,7 +100,7 @@ void loop() {
         left_Item_ID=printPiccDetails(reader);
         Serial.print(left_Item_ID);
         Serial.println(); 
-       }
+      }
       if(reader==1){
         right_Item_ID=printPiccDetails(reader);
         Serial.print(right_Item_ID);
@@ -130,9 +130,12 @@ void loop() {
 //////////////////////////////////////Motor Steppter/////////////////////////////
 
 // step one revolution in one direction:
-//  Serial.println("clockwise");
+//Control the movement of stepper motor so that it only starts when passing above code.
+//Q2: I'm confused about what should be put in the if() statement?
+  if(finish one comparsion on scale?){
   myStepper.step(rotation*angle);
-  Serial.println(leftTotal);
+  }
+//  Serial.println(leftTotal);
 } //for loop ends
 
 
@@ -181,22 +184,41 @@ void setScores(){
   int left_Senario_Score;
   int right_Senario_Score;
   //find item score
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < 2; i++) {
     if (item_Database[i][0] == left_Item_ID) {
       left_Item_Score = item_Database[i][1].toInt();
     }
-    else if (item_Database[i][0] == right_Item_ID) {
+    if (item_Database[i][0] == right_Item_ID) {
       right_Item_Score = item_Database[i][1].toInt();
     }
+    //Q1: when the plate does not have item, which means the reader does not detect the uid, then the totalScore will be set to 0. 
+    //If the reader can only detect the item but the scenario card (eg. user did not put the scenario card for the item), 
+    //the totalScore will be just the item score.
+    //How could I know whether there is a rfid card on the reader??? something like left_Item_ID=null???
+    if(left_Item_ID=null){
+      leftTotal=0;
+    }
+    if(right_Item_ID=null){
+      rightTotal=0;
+    }
+    if(left_Senario_ID=null){
+      left_Senario_Score=0;
+    }
+    if(right_Senario_ID=null){
+      right_Senario_Score=0;
+    }
+
+
+    
     else{
-      left_Item_Score = 0;
-      right_Item_Score=0;
-      Serial.print("Wrong Item card");
+//      left_Item_Score = 0;
+//      right_Item_Score=0;
+//      Serial.print("Wrong Item card");
       }
   }//for ends item
 
-  //find senario score
-  for (int i = 0; i < 12; i++) {
+  
+  for (int i = 0; i < 2; i++) {
     if (senario_Database[i][0] == left_Senario_ID) {
       left_Senario_Score = senario_Database[i][1].toInt();
     }
@@ -204,9 +226,9 @@ void setScores(){
       right_Senario_Score = senario_Database[i][1].toInt();
     }
     else{
-      left_Senario_Score = 0;
-      right_Senario_Score=0;
-      Serial.print("Wrong Scenario card");
+//      left_Senario_Score = 0;
+//      right_Senario_Score=0;
+//      Serial.print("Wrong Scenario card");
       }
   }//for ends senario
 
@@ -221,6 +243,8 @@ void setScores(){
   L_R_new[0] = leftTotal;
   L_R_new[1] = rightTotal;
 
+ 
+// Serial.print(left_Senario_Score);
 }
 
 void setBalanceRotation()
