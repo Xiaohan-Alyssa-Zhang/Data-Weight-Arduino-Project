@@ -120,30 +120,38 @@ void loop() {
     if (!mfrc522[reader].PICC_IsNewCardPresent() && !mfrc522[reader].PICC_ReadCardSerial()){
       if(reader==0){
         left_Item_ID="Empty";
-        Serial.print(left_Item_ID);
         }
-      if(reader==0){
+      if(reader==1){
         right_Item_ID="Empty";
         }
-      if(reader==0){
+      if(reader==2){
         left_Senario_ID="Empty";
         }
-      if(reader==0){
+      if(reader==3){
         right_Senario_ID="Empty";
       }
     }
  }//reader *4times loop ends here
   // Call setScores function for finding the score of L1 R1 L2 R2.
+  Serial.println("Here is left item id: ");
+   Serial.println(left_Item_ID);
    setScores();
    setBalanceRotation();
  
 //////////////////////////////////////Motor Steppter/////////////////////////////
 
 // step one revolution in one direction:
-//Control the movement of stepper motor so that it only starts when passing above code.
-//Q2: I'm confused about what should be put in the if() statement?
-//  if(finish one comparsion on scale?){
-//  myStepper.step(rotation*angle);
+//Serial.print("rotation: ");
+//Serial.println(rotation);
+
+
+if(left_Item_ID !="Empty" or right_Item_ID !="Empty"){//if there is at least one item on the plate, the scale can work.
+  Serial.print("inside can work");
+  myStepper.step(rotation*angle);
+}
+delay(5500);
+Serial.println("///////////////////");
+
 //  }
 //  Serial.println(leftTotal);
 } //for loop ends
@@ -197,6 +205,8 @@ void setScores(){
   for (int i = 0; i < 3; i++) {
     if (item_Database[i][0] == left_Item_ID) {
       left_Item_Score = item_Database[i][1].toInt();
+      
+     
     }
     if (item_Database[i][0] == right_Item_ID) {
       right_Item_Score = item_Database[i][1].toInt();
@@ -239,7 +249,7 @@ void setScores(){
 
 void setBalanceRotation()
 {
-  int d1, d2, d3, dPrevious, dnew, angle;
+  int d1, d2, d3, dPrevious, dnew;
 
   //Append to the final list
   int &L1 = L_R_old[0];
@@ -247,6 +257,11 @@ void setBalanceRotation()
 
   int &L2 = L_R_new[0];
   int &R2 = L_R_new[1];
+
+//  Serial.println(L1);
+//  Serial.println(R1);
+//  Serial.println(L2);
+//  Serial.println(R2);
 
   if (((L1 > R1) or (L1 == R1)) and (L2 < R2)) {
     rotation = 1;
@@ -289,7 +304,7 @@ void setBalanceRotation()
   // Calculate angle and covert to step
   dPrevious = abs(L1 - R1);
   dnew = abs(L2 - R2);
-
+  
   if ( ((L1 < R1) or (L1 == R1)) and ((L2 < R2) or (L2 == R2)) ) {
     angle = round(abs(dPrevious - dnew) * 40 / 105);
   }
@@ -302,4 +317,5 @@ void setBalanceRotation()
   else if ((L1 > R1) and (L2 < R2)) {
     angle = round(abs(dPrevious + dnew) * 40 / 105);
   }
+
 }
