@@ -19,18 +19,15 @@ String right_Item_ID= "";
 String left_Senario_ID= "";
 String right_Senario_ID= "";
 
-String item_Database[][2] = {{"33ddc59","20"}, {"33cc838", "60"}};
-String senario_Database[][2] = {{"33ddc59", "20"}, {"33cc838", "60"}};
+String item_Database[][3] = {{"33ddc59","20"}, {"33cc838", "60"},{"Empty","0"}};
+String senario_Database[][3] = {{"33ddc59", "20"}, {"33cc838", "60"},{"Empty","0"}};
 
-
-
-
-byte leftPlateScore     = 0;
-byte rightPlateScore    = 0;
-byte leftScenarioScore  = 0;
-byte rightScenarioScore = 0;
-byte leftTotal          = 0;
-byte rightTotal         = 0;
+int leftPlateScore     = 0;
+int rightPlateScore    = 0;
+int leftScenarioScore  = 0;
+int rightScenarioScore = 0;
+int leftTotal          = 0;
+int rightTotal         = 0;
 
 
 int L_R_old[2];
@@ -49,7 +46,7 @@ const int brakeA = 2;
 const int brakeB = 8;
 const int dirA = 12;
 const int dirB = 13;
-
+const int stepsPerRevolution = 200;
 // initialize the stepper library on pins 8 through 11:
 Stepper myStepper(stepsPerRevolution, 12, 13);
 
@@ -120,6 +117,21 @@ void loop() {
       // Stop encryption on PCD
       mfrc522[reader].PCD_StopCrypto1();
     }
+    if (!mfrc522[reader].PICC_IsNewCardPresent() && !mfrc522[reader].PICC_ReadCardSerial()){
+      if(reader==0){
+        left_Item_ID="Empty";
+        Serial.print(left_Item_ID);
+        }
+      if(reader==0){
+        right_Item_ID="Empty";
+        }
+      if(reader==0){
+        left_Senario_ID="Empty";
+        }
+      if(reader==0){
+        right_Senario_ID="Empty";
+      }
+    }
  }//reader *4times loop ends here
   // Call setScores function for finding the score of L1 R1 L2 R2.
    setScores();
@@ -130,9 +142,9 @@ void loop() {
 // step one revolution in one direction:
 //Control the movement of stepper motor so that it only starts when passing above code.
 //Q2: I'm confused about what should be put in the if() statement?
-  if(finish one comparsion on scale?){
-  myStepper.step(rotation*angle);
-  }
+//  if(finish one comparsion on scale?){
+//  myStepper.step(rotation*angle);
+//  }
 //  Serial.println(leftTotal);
 } //for loop ends
 //////////////////////////////////////Motor Steppter/////////////////////////////
@@ -182,41 +194,18 @@ void setScores(){
   int left_Senario_Score;
   int right_Senario_Score;
   //find item score
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 3; i++) {
     if (item_Database[i][0] == left_Item_ID) {
       left_Item_Score = item_Database[i][1].toInt();
     }
     if (item_Database[i][0] == right_Item_ID) {
       right_Item_Score = item_Database[i][1].toInt();
-    }
-    //Q1: when the plate does not have item, which means the reader does not detect the uid, then the totalScore will be set to 0. 
-    //If the reader can only detect the item but the scenario card (eg. user did not put the scenario card for the item), 
-    //the totalScore will be just the item score.
-    //How could I know whether there is a rfid card on the reader??? something like left_Item_ID=null???
-    if(left_Item_ID=null){
-      leftTotal=0;
-    }
-    if(right_Item_ID=null){
-      rightTotal=0;
-    }
-    if(left_Senario_ID=null){
-      left_Senario_Score=0;
-    }
-    if(right_Senario_ID=null){
-      right_Senario_Score=0;
-    }
-
-
+    }  
     
-    else{
-//      left_Item_Score = 0;
-//      right_Item_Score=0;
-//      Serial.print("Wrong Item card");
-      }
   }//for ends item
 
   
-  for (int i = 0; i < 2; i++) {
+  for (int i = 0; i < 3; i++) {
     if (senario_Database[i][0] == left_Senario_ID) {
       left_Senario_Score = senario_Database[i][1].toInt();
     }
@@ -224,11 +213,19 @@ void setScores(){
       right_Senario_Score = senario_Database[i][1].toInt();
     }
   }//for ends senario
-
   //Add both item score and senario score
+
   leftTotal = left_Item_Score + left_Senario_Score;
   rightTotal = right_Item_Score + right_Senario_Score;
+  //Exception: if plate == 0, then total = 0
+  if(left_Item_Score==0){
+    leftTotal=0;
+    }
+  if(right_Item_Score==0){
+    rightTotal=0;
+    }
 
+    
   //Create current left and right score list
   L_R_old[0] = L_R_new[0];
   L_R_old[1] = L_R_new[1];
