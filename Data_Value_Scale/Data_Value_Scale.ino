@@ -38,7 +38,10 @@ int L_R_new[2];
 
 int rotation = 0;
 int angle = 0;
-//////////////////////Motor Stepper starts/////////////////////
+
+void setupReaders();
+
+//////////////////////////////////////Motor Steppter/////////////////////////////
 
 const int pwmA = 3;
 const int pwmB = 11;
@@ -46,14 +49,11 @@ const int brakeA = 2;
 const int brakeB = 8;
 const int dirA = 12;
 const int dirB = 13;
-const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
+
 // initialize the stepper library on pins 8 through 11:
 Stepper myStepper(stepsPerRevolution, 12, 13);
 
-////////////////Motor Stepper ends//////////////////////
-
-
-void setupReaders();
+//////////////////////////////////////Motor Steppter/////////////////////////////
 
 
 
@@ -67,7 +67,7 @@ void setup() {
   
 
   
-//////////////////////////Motor Stepper///////////////////////////////
+//////////////////////////////////////Motor Steppter/////////////////////////////
 // set the PWM and brake pins so that the direction pins  // can be used to control the motor:
  // set the PWM and brake pins so that the direction pins  // can be used to control the motor:
   pinMode(pwmA, OUTPUT);
@@ -84,7 +84,7 @@ void setup() {
   myStepper.setSpeed(60);
   // initialize the serial port:
   
-////////////////////////////Motor Stepper///////////////////////////////
+//////////////////////////////////////Motor Steppter/////////////////////////////
 }
 
 /*
@@ -124,9 +124,7 @@ void loop() {
   // Call setScores function for finding the score of L1 R1 L2 R2.
    setScores();
    setBalanceRotation();
-
-
-   
+ 
 //////////////////////////////////////Motor Steppter/////////////////////////////
 
 // step one revolution in one direction:
@@ -137,7 +135,7 @@ void loop() {
   }
 //  Serial.println(leftTotal);
 } //for loop ends
-
+//////////////////////////////////////Motor Steppter/////////////////////////////
 
 
 
@@ -147,7 +145,7 @@ void loop() {
 
 void setupReaders()
 {
-  SPI.begin();                  // Init SPI bus
+  SPI.begin();// Init SPI bus
   for (uint8_t reader = 0; reader < NR_OF_READERS; reader++)
   {
     mfrc522[reader].PCD_Init(ssPins[reader], RST_PIN);
@@ -225,11 +223,6 @@ void setScores(){
     else if(senario_Database[i][0] == right_Senario_ID) {
       right_Senario_Score = senario_Database[i][1].toInt();
     }
-    else{
-//      left_Senario_Score = 0;
-//      right_Senario_Score=0;
-//      Serial.print("Wrong Scenario card");
-      }
   }//for ends senario
 
   //Add both item score and senario score
@@ -288,12 +281,13 @@ void setBalanceRotation()
     d1 = abs(L1 - R1);
     d2 = abs(L2 - R2);
     d3 = d1 - d2;
-    if (d3 < 0) {}
+    if (d3 < 0) {
     rotation = 1;
   }
   else if (d3 > 0) {
     rotation = -1;
   }
+}
 
   // Calculate angle and covert to step
   dPrevious = abs(L1 - R1);
