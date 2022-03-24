@@ -61,27 +61,6 @@ void setup() {
   Serial.begin(9600);  // Initialize serial communications with the PC
   while (!Serial);     // Do nothing if no serial port is opened (added for Arduinos based on ATMEGA32U4)
   setupReaders();
-  
-
-  
-//////////////////////////////////////Motor Steppter/////////////////////////////
-// set the PWM and brake pins so that the direction pins  // can be used to control the motor:
- // set the PWM and brake pins so that the direction pins  // can be used to control the motor:
-  pinMode(pwmA, OUTPUT);
-  pinMode(pwmB, OUTPUT);
-  pinMode(brakeA, OUTPUT);
-  pinMode(brakeB, OUTPUT);
- 
-  digitalWrite(pwmA, HIGH);
-  digitalWrite(pwmB, HIGH);
-  digitalWrite(brakeA, LOW);
-  digitalWrite(brakeB, LOW);
-
-  // set the speed at 60 rpm:
-  myStepper.setSpeed(60);
-  // initialize the serial port:
-  
-//////////////////////////////////////Motor Steppter/////////////////////////////
 }
 
 /*
@@ -117,7 +96,7 @@ void loop() {
       // Stop encryption on PCD
       mfrc522[reader].PCD_StopCrypto1();
     }
-    if (!mfrc522[reader].PICC_IsNewCardPresent() && !mfrc522[reader].PICC_ReadCardSerial()){
+    else if (!mfrc522[reader].PICC_IsNewCardPresent() && !mfrc522[reader].PICC_ReadCardSerial()){
       if(reader==0){
         left_Item_ID="Empty";
         }
@@ -145,15 +124,15 @@ void loop() {
 //Serial.println(rotation);
 
 
-if(left_Item_ID !="Empty" or right_Item_ID !="Empty"){//if there is at least one item on the plate, the scale can work.
-  Serial.print("inside can work");
-  myStepper.step(rotation*angle);
-}
-delay(5500);
-Serial.println("///////////////////");
+//if(left_Item_ID !="Empty" or right_Item_ID !="Empty"){//if there is at least one item on the plate, the scale can work.
+////  Serial.print("inside can work");
+//  myStepper.step(rotation*angle);
+//}
+//delay(5500);
+//Serial.println("///////////////////");
 
-//  }
-//  Serial.println(leftTotal);
+
+delay(5500);
 } //for loop ends
 //////////////////////////////////////Motor Steppter/////////////////////////////
 
