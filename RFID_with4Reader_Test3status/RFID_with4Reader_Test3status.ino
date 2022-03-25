@@ -11,7 +11,10 @@
 #define NR_OF_READERS   4
 
 byte ssPins[] = {SS_1_PIN, SS_2_PIN, SS_3_PIN, SS_4_PIN};
+
 String current_Status[]= {"Unknow","Unknow","Unknow","Unknow"};
+
+
 // Create an MFRC522 instance :
 MFRC522 mfrc522[NR_OF_READERS];
 
@@ -55,7 +58,9 @@ void loop() {
       Serial.print(F(": Card UID in string:"));
       String id=dump_byte_array(mfrc522[reader].uid.uidByte, mfrc522[reader].uid.size);
       Serial.println(id);
-      Serial.println("Case 1: Find new card");
+      Serial.print("Reader: ");
+      Serial.print(reader);
+      Serial.println("  Find new card");
       Serial.println();
       
       /*Serial.print(F("PICC type: "));
@@ -67,16 +72,20 @@ void loop() {
       mfrc522[reader].PCD_StopCrypto1();
     } //if (mfrc522[reader].PICC_IsNewC..
 
-    else if (mfrc522[reader].PICC_IsNewCardPresent() && mfrc522[reader].PICC_ReadCardSerial() && current_Status[reader] == "Card_Present"){
+    else if (mfrc522[reader].PICC_IsNewCardPresent()&& mfrc522[reader].PICC_ReadCardSerial() && current_Status[reader] == "Card_Present"){
       current_Status[reader]= "Card_Present";
-      Serial.println("Case 2: Card is till there");
+      Serial.print("Reader: ");
+      Serial.print(reader);
+      Serial.println("  Card is till there");
     }
-    else if (!mfrc522[reader].PICC_IsNewCardPresent() && current_Status[reader] != "No_Card"){
-      current_Status[reader]= "No_Card";
-      Serial.println("Case 3: No card");
+    else if(!mfrc522[reader].PICC_IsNewCardPresent()&& current_Status[reader] != "no_Card") {
+      current_Status[reader]= "no_Card";
+      Serial.print("Reader: ");
+      Serial.print(reader);
+      Serial.println("  No card");
   }
  }//for(uint8_t reader..
-  delay(1000);
+  delay(5000);
 }
 
 /**

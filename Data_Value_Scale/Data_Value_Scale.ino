@@ -96,7 +96,7 @@ void loop() {
       // Stop encryption on PCD
       mfrc522[reader].PCD_StopCrypto1();
     }
-    else if (!mfrc522[reader].PICC_IsNewCardPresent() && !mfrc522[reader].PICC_ReadCardSerial()){
+    else if (!mfrc522[reader].PICC_IsNewCardPresent()){
       if(reader==0){
         left_Item_ID="Empty";
         }
@@ -110,6 +110,8 @@ void loop() {
         right_Senario_ID="Empty";
       }
     }
+//    Serial.println("reader");
+//    Serial.println(reader);
  }//reader *4times loop ends here
   // Call setScores function for finding the score of L1 R1 L2 R2.
   Serial.println("Here is left item id: ");
