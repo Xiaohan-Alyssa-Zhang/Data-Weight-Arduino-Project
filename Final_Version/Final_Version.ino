@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Stepper.h>
-
+#include <LiquidCrystal.h>
 
 const uint8_t NR_OF_READERS = 4;
 
@@ -31,8 +31,10 @@ RFID_STATE currentState[NR_OF_READERS] = {UNKNOWN_CARD_STATE, UNKNOWN_CARD_STATE
 String detector[4]={};
 
 //Database
-String item_Database[][3] = {{"d3dde98","20"}, {"33ddc59", "60"},{"Empty","0"}};
-String senario_Database[][3] = {{"33cc838", "10"}, {"b3558d9", "10"},{"Empty","0"}};
+String item_Database[][3] = {{"4425252f46480","10"},{"42dc3aa4d5380","50"},{"924cf42","40"}, {"d51e4748", "10"},{"23d59e80","5"},{"c5064758","50"},{"a5df4558","100"},{"6255fb2","25"},{"Empty","0"}};
+String senario_Database[][3] = {{"c37e448", "10"}, {"d343838", "105"},{"6341018","60"},{"F364ed9","85"},{"33c9838","60"},{"134718a","15"},{"a34f709","50"},{"a3576da","90"},{"b3558d9","10"},{"d3dde98","35"},{"33cc838","50"},{"33ddc59","90"},{"Empty","0"}};
+//物品： 照片：924cf42 "40"  鞋：d51e4748 "10" 苹果：23d59e80 "5" 票：c5064758 "50" 手机：a5df4558 "100" 牛奶：6255fb2 "25"
+//普通苹果：c37e448 "10" 杀人犯苹果：d343838 "105" 社团门票：6341018 "60" 伦敦车票：F364ed9 "85" 签名鞋子：33c9838 "80" 新鞋子：134718a "15" 旅游照片：a34f709 "50" 狗仔照片：a3576da "90" 垃圾场牛奶：b3558d9 "10"  便利贴牛奶：d3dde98 "35" 新手机：33cc838 "50" Jack手机：33ddc59 "90";
 
 int left_Item_Score     = 0;
 int right_Item_Score    = 0;
@@ -60,12 +62,26 @@ const int stepsPerRevolution = 200;  // change this to fit the number of steps p
 // initialize the stepper library on pins 8 through 11:
 Stepper myStepper(stepsPerRevolution, 12, 13);
 
+//Screen 
+
+const int en1 = 23;
+const int en2 = 26;
+LiquidCrystal lcd1(22, en1, 30, 24, 28, 32);
+LiquidCrystal lcd2(22, en2, 30, 24, 28, 32);
 
 void setup()
 {
   Serial.begin(9600);
   while (!Serial);
   SPI.begin();
+  lcd1.begin(16, 2);
+  lcd2.begin(16, 2);
+
+  lcd1.print("Data Value:");
+  lcd1.setCursor(0, 1);
+  
+  lcd2.print("Data Value:");
+  lcd2.setCursor(0, 1);
 
   for (uint8_t reader = 0; reader < NR_OF_READERS; reader++)
   {
@@ -128,14 +144,29 @@ void loop()
 //  Serial.println(L_R_new[0]);
 //  Serial.println(L_R_new[1]);
   setBalanceRotation();
-  Serial.println("rotation");
-  Serial.println(rotation);
-  Serial.println("angle");
-  Serial.println(angle);
-  if(detector[0]!= "Empty" or detector[1]!= "Empty"){
-    myStepper.step(rotation*angle);
+//  Serial.println("rotation");
+//  Serial.println(rotation);
+//  Serial.println("angle");
+//  Serial.println(angle);
+//  Serial.println("Left Total: ");
+//  Serial.print(leftTotal);
+//  Serial.println("New List");
+//  Serial.println(L_R_new[0]);
+//  Serial.println(L_R_new[1]);
+//  Serial.print("Old List");
+//  Serial.println(L_R_old[0]);
+//  Serial.println(L_R_old[1]);
+//  lcd1.setCursor(0, 1); 
+  lcd1.print(leftTotal);
+  lcd2.print(rightTotal);
+  
+  
+  if(L_R_old[0] == L_R_new[0] and L_R_old[1] == L_R_new[1]){
+    myStepper.step(0);
+    }else{
+      myStepper.step(rotation*angle);
     }
-  delay(4000);
+  delay(3000);
 }
 
 
@@ -165,7 +196,7 @@ void setScores(){
       Serial.println("left_Item_Score: ");
       Serial.println(left_Item_Score);
     }  
-    if (item_Database[i][0] == detector[1]) {
+    else if (item_Database[i][0] == detector[1]) {
       right_Item_Score = item_Database[i][1].toInt();
       Serial.println("right_Item_Score: ");
       Serial.println(right_Item_Score);
@@ -178,7 +209,7 @@ void setScores(){
       Serial.println("left_Senario_Score: ");
       Serial.println(left_Senario_Score);
     }
-    else if(senario_Database[i][0] == detector[3]) {
+    if(senario_Database[i][0] == detector[3]) {
       right_Senario_Score = senario_Database[i][1].toInt();
       Serial.println("right_Senario_Score: ");
       Serial.println(right_Senario_Score);
@@ -268,7 +299,7 @@ void setBalanceRotation()
   dPrevious = abs(L1 - R1);
   dnew = abs(L2 - R2);
   
-  if ( ((L1 < R1) or (L1 == R1)) and ((L2 < R2) or (L2 == R2)) ) {
+  if ( (L1 < R1)and (L2 < R2)){
     angle = round(abs(dPrevious - dnew) * 40 / 351);
   }
   else if ((L1 < R1) and (L2 > R2)) {
@@ -280,5 +311,19 @@ void setBalanceRotation()
   else if ((L1 > R1) and (L2 < R2)) {
     angle = round(abs(dPrevious + dnew) * 40 / 351);
   }
-
+  else if ((L1 == R1)and (L2 == R2)) {
+    angle = round(abs(dPrevious - dnew) * 40 / 351);
+  }
+  else if ( (L1 == R1)and (L2 < R2)) {
+    angle = round(abs(dPrevious - dnew) * 40 / 351);
+  }
+  else if ( (L1 == R1)and (L2 > R2) ) {
+    angle = round(abs(dPrevious - dnew) * 40 / 351);
+  }
+  else if ( (L1 < R1)and (L2 == R2) ) {
+    angle = round(abs(dPrevious - dnew) * 40 / 351);
+  }
+  else if ( (L1 > R1)and (L2 == R2) ) {
+    angle = round(abs(dPrevious - dnew) * 40 / 351);
+  }
 }
