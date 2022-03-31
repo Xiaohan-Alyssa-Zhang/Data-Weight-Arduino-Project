@@ -31,8 +31,8 @@ RFID_STATE currentState[NR_OF_READERS] = {UNKNOWN_CARD_STATE, UNKNOWN_CARD_STATE
 String detector[4]={};
 
 //Database
-String item_Database[][9] = {{"4425252f46480","10"},{"42dc3aa4d5380","50"},{"924cf42","40"}, {"d51e4748", "10"},{"23d59e80","5"},{"c5064758","50"},{"a5df4558","100"},{"6255fb2","25"},{"Empty","0"}};
-String senario_Database[][13] = {{"c37e448", "10"}, {"d343838", "105"},{"6341018","60"},{"F364ed9","85"},{"33c9838","60"},{"134718a","15"},{"a34f709","50"},{"a3576da","90"},{"b3558d9","10"},{"d3dde98","35"},{"33cc838","50"},{"33ddc59","90"},{"Empty","0"}};
+String item_Database[][9] = {{"4425252f46480","10"},{"42dc3aa4d5380","50"},{"7b961fac","40"}, {"d51e4758", "10"},{"23d59e80","5"},{"c5064758","50"},{"a5df4558","100"},{"6255fb2","25"},{"Empty","0"}};
+String senario_Database[][13] = {{"c37e458", "10"}, {"d343838", "105"},{"6341018","60"},{"F364ed9","85"},{"33c9838","60"},{"134718a","15"},{"a34f709","50"},{"a3576da","90"},{"b3558d9","10"},{"d3dde98","35"},{"33cc838","50"},{"33ddc59","90"},{"Empty","0"}};
 //物品： 照片：924cf42 "40"  鞋：d51e4748 "10" 苹果：23d59e80 "5" 票：c5064758 "50" 手机：a5df4558 "100" 牛奶：6255fb2 "25"
 //普通苹果：c37e448 "10" 杀人犯苹果：d343838 "105" 社团门票：6341018 "60" 伦敦车票：F364ed9 "85" 签名鞋子：33c9838 "80" 新鞋子：134718a "15" 旅游照片：a34f709 "50" 狗仔照片：a3576da "90" 垃圾场牛奶：b3558d9 "10"  便利贴牛奶：d3dde98 "35" 新手机：33cc838 "50" Jack手机：33ddc59 "90";
 
@@ -78,10 +78,13 @@ void setup()
   lcd2.begin(16, 2);
   lcd1.setCursor(0, 0);
   lcd1.print("Data Value: ");
-  
+  lcd1.setCursor(13, 0);
+  lcd1.print("00");
   
   lcd2.setCursor(0, 0);
   lcd2.print("Data Value:");
+  lcd2.setCursor(13, 0);
+  lcd2.print("00");
   
 
   for (uint8_t reader = 0; reader < NR_OF_READERS; reader++)
@@ -159,20 +162,38 @@ void loop()
   Serial.print("Old List");
   Serial.println(L_R_old[0]);
   Serial.println(L_R_old[1]);
-//  lcd1.setCursor(0, 1); 
-//  lcd1.setCursor(0, 1);
+//  LCD screen shows data value
   lcd1.setCursor(13, 0);
   lcd1.print(leftTotal);
+  if(leftTotal<10){
+    lcd1.print(" ");
+    }
+    
   lcd2.setCursor(13, 0);
   lcd2.print(rightTotal);
-  
+  if(rightTotal<10){
+    lcd2.print(" ");
+    }
+ //  LCD screen shows try scenario when not detecting scenario card
+  if(detector[0]!="Empty" && detector[1]!="Empty"){
+    lcd1.setCursor(0, 1);
+    lcd1.print(" Try Senario");
+    lcd2.setCursor(0, 1);
+    lcd2.print(" Try Senario");
+    }
+    else{
+    lcd1.setCursor(0, 1);
+    lcd1.print("            ");
+    lcd2.setCursor(0, 1);
+    lcd2.print("            ");
+      }
   
   if(L_R_old[0] == L_R_new[0] and L_R_old[1] == L_R_new[1]){
     myStepper.step(0);
     }else{
       myStepper.step(rotation*angle);
     }
-  delay(3000);
+  delay(300);
 }
 
 
