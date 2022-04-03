@@ -1,0 +1,48 @@
+//Globals
+#define STEPPIN 12
+#define DIRPIN 11
+#define ENAPIN 10
+
+const int STEPTIME = 5;
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(STEPPIN,OUTPUT);
+  pinMode(DIRPIN,OUTPUT);
+  pinMode(ENAPIN,OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+//  forward(200);
+//  reverse(200);
+
+
+//forward(0); //I can still twist the motor shaft by hand so it is not exactly static.
+
+}
+
+void forward(int steps){
+  int i;
+  digitalWrite(ENAPIN,LOW);//ENABLE IS ACTIVE LOW
+  digitalWrite(DIRPIN,HIGH);//SET DIRECTION 
+  for(i=0;i<steps;i++){
+    digitalWrite(STEPPIN,HIGH);
+    delay(STEPTIME);
+    digitalWrite(STEPPIN,LOW);
+    delay(STEPTIME);
+  }
+  digitalWrite(ENAPIN,HIGH);//DISABLE STEPPER
+}
+
+void reverse(int steps){
+  int i;
+  digitalWrite(ENAPIN,LOW);//ENABLE IS ACTIVE LOW
+  digitalWrite(DIRPIN,LOW);//SET DIRECTION 
+  for(i=0;i<steps;i++){
+    digitalWrite(STEPPIN,HIGH);
+    delay(STEPTIME);
+    digitalWrite(STEPPIN,LOW);
+    delay(STEPTIME);
+  }
+  digitalWrite(ENAPIN,HIGH);//DISABLE STEPPER
+}
