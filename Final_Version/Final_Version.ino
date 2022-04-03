@@ -195,7 +195,7 @@ void loop()
       }
   
   if(L_R_old[0] == L_R_new[0] and L_R_old[1] == L_R_new[1]){
-    myStepper.step(0);
+//    myStepper.step(0);
     }else{
       myStepper.step(rotation*angle);
     }
