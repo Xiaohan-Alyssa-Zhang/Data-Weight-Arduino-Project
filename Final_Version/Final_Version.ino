@@ -53,7 +53,7 @@ int angle = 0;
 #define STEPPIN 12
 #define DIRPIN 11
 #define ENAPIN 10
-const int STEPTIME = 5;
+const int STEPTIME = 25;
 //Screen 
 
 const int en1 = 23;
@@ -180,15 +180,15 @@ void loop()
   
   if(L_R_old[0] == L_R_new[0] and L_R_old[1] == L_R_new[1]){
 
-    }else{
-      if(rotation>0){
-        forward(rotation*angle);
-        }
-      if(rotation<0){
-        reverse(rotation*angle);
-        }
     }
-  delay(300);
+  if(rotation>0){
+     forward(angle*10);
+    }
+  if(rotation<0){
+     reverse(angle*10);
+     }
+  
+  delay(1000);
 }
 
 
