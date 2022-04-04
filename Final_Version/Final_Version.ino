@@ -50,18 +50,10 @@ int rotation = 0;
 int angle = 0;
 
 // Stepper
-const int pwmA = 3;
-const int pwmB = 11;
-const int brakeA = 2;
-const int brakeB = 8;
-const int dirA = 12;
-const int dirB = 13;
-const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
-// for your motor
-
-// initialize the stepper library on pins 8 through 11:
-Stepper myStepper(stepsPerRevolution, 12, 13);
-
+#define STEPPIN 12
+#define DIRPIN 11
+#define ENAPIN 10
+const int STEPTIME = 5;
 //Screen 
 
 const int en1 = 23;
@@ -97,18 +89,10 @@ void setup()
     mfrc522[reader].PCD_DumpVersionToSerial();
   }
 
-  pinMode(pwmA, OUTPUT);
-  pinMode(pwmB, OUTPUT);
-  pinMode(brakeA, OUTPUT);
-  pinMode(brakeB, OUTPUT);
- 
-  digitalWrite(pwmA, HIGH);
-  digitalWrite(pwmB, HIGH);
-  digitalWrite(brakeA, LOW);
-  digitalWrite(brakeB, LOW);
-
-  // set the speed at 60 rpm:
-  myStepper.setSpeed(60);
+//stepper motor
+  pinMode(STEPPIN,OUTPUT);
+  pinMode(DIRPIN,OUTPUT);
+  pinMode(ENAPIN,OUTPUT);
 }
 
 void loop()
@@ -195,9 +179,14 @@ void loop()
       }
   
   if(L_R_old[0] == L_R_new[0] and L_R_old[1] == L_R_new[1]){
-//    myStepper.step(0);
+
     }else{
-      myStepper.step(rotation*angle);
+      if(rotation>0){
+        forward(rotation*angle);
+        }
+      if(rotation<0){
+        reverse(rotation*angle);
+        }
     }
   delay(300);
 }
@@ -359,4 +348,31 @@ void setBalanceRotation()
   else if ( (L1 > R1)and (L2 == R2) ) {
     angle = round(abs(dPrevious - dnew) * 40 / 351);
   }
+}
+
+
+void forward(int steps){
+  int i;
+  digitalWrite(ENAPIN,LOW);//ENABLE IS ACTIVE LOW
+  digitalWrite(DIRPIN,HIGH);//SET DIRECTION 
+  for(i=0;i<steps;i++){
+    digitalWrite(STEPPIN,HIGH);
+    delay(STEPTIME);
+    digitalWrite(STEPPIN,LOW);
+    delay(STEPTIME);
+  }
+  digitalWrite(ENAPIN,HIGH);//DISABLE STEPPER
+}
+
+void reverse(int steps){
+  int i;
+  digitalWrite(ENAPIN,LOW);//ENABLE IS ACTIVE LOW
+  digitalWrite(DIRPIN,LOW);//SET DIRECTION 
+  for(i=0;i<steps;i++){
+    digitalWrite(STEPPIN,HIGH);
+    delay(STEPTIME);
+    digitalWrite(STEPPIN,LOW);
+    delay(STEPTIME);
+  }
+  digitalWrite(ENAPIN,HIGH);//DISABLE STEPPER
 }
