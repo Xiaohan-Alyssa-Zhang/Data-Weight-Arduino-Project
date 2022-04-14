@@ -31,10 +31,18 @@ RFID_STATE currentState[NR_OF_READERS] = {UNKNOWN_CARD_STATE, UNKNOWN_CARD_STATE
 String detector[4]={};
 
 //Database
-String item_Database[][9] = {{"4425252f46480","10"},{"924cf42","40"},{"7b961fac","40"}, {"d51e4758", "20"},{"23d59e80","25"},{"73978f80","50"},{"a5df4558","100"},{"6255fb2","25"},{"Empty","0"}};
-String senario_Database[][13] = {{"c37e448", "10"}, {"d343838", "105"},{"634118","60"},{"f364ed9","85"},{"33c9838","60"},{"134718a","15"},{"a34f709","50"},{"a3576da","90"},{"b3558d9","13"},{"d3dde98","35"},{"33cc838","36"},{"33ddc59","50"},{"Empty","0"}};
-//物品： 照片：924cf42 "40"  鞋：d51e4748 "10" 苹果：23d59e80 "5" 票：c5064758 "50" 手机：a5df4558 "100" 牛奶：6255fb2 "25"
-//普通苹果：c37e448 "10" 杀人犯苹果：d343838 "105" 社团门票：6341018 "60" 伦敦车票：F364ed9 "85" 签名鞋子：33c9838 "80" 新鞋子：134718a "15" 旅游照片：a34f709 "50" 狗仔照片：a3576da "90" 垃圾场牛奶：b3558d9 "10"  便利贴牛奶：d3dde98 "35" 新手机：33cc838 "50" Jack手机：33ddc59 "90";
+String item_Database[][9] = {{"4425252f46480","10"},{"92dd4cf42","40"},{"924cf42","40"}, {"d51e4758", "25"},{"23d59e80","20"},{"73978f80","50"},{"a5df4558","100"},{"6255fb2","30"},{"Empty","0"}};
+String senario_Database[][13] = {{"c37e448", "10"}, {"d343838", "110"},{"634118","10"},{"f364ed9","45"},{"33c9838","55"},{"134718a","10"},{"a34f709","40"},{"a3576da","80"},{"b3558d9","15"},{"d3dde98","20"},{"33cc838","35"},{"33ddc59","50"},{"Empty","0"}};
+//物品： 照片：924cf42 "40"  鞋：d51e4758 "25" 苹果：23d59e80 "20" 票：73978f80 "50" 手机：a5df4558 "100" 牛奶：6255fb2 "30"
+//普通苹果：c37e448 "10" 杀人犯苹果：d343838 "110" 社团门票：634118 "10" 伦敦车票：f364ed9 "45" 签名鞋子：33c9838 "55" 新鞋子：134718a "10" 旅游照片：a34f709 "40" 狗仔照片：a3576da "80" 垃圾场牛奶：b3558d9 "15"  便利贴牛奶：d3dde98 "20" 新手机：33cc838 "35" Jack手机：33ddc59 "50";
+
+String item_senario[][6] = {{"23d59e80","c37e448","d343838"},{"73978f80","634118","f364ed9"},{"d51e4758","33c9838","134718a"},{"924cf42","a34f709","a3576da"},{"6255fb2","b3558d9","d3dde98"},{"a5df4558","33cc838","33ddc59"}};
+//String apple[3] = {"23d59e80","c37e448","d343838"};
+//String ticket[3] = {"73978f80","634118","f364ed9"};
+//String shoes[3] = {"d51e4758","33c9838","134718a"};
+//String photo[3] = {"924cf42","a34f709","a3576da"};
+//String milk[3] = {"6255fb2","b3558d9","d3dde98"};
+//String phone[3] = {"a5df4558","33cc838","33ddc59"};
 
 int left_Item_Score     = 0;
 int right_Item_Score    = 0;
@@ -132,20 +140,21 @@ void loop()
 //  Serial.println(L_R_new[0]);
 //  Serial.println(L_R_new[1]);
   setBalanceRotation();
-  Serial.println("rotation");
-  Serial.println(rotation);
-  Serial.println("angle");
-  Serial.println(angle*10);
-  Serial.println("Left Total: ");
-  Serial.print(leftTotal);
-  Serial.println("Right Total: ");
-  Serial.print(rightTotal);
-  Serial.println("New List");
-  Serial.println(L_R_new[0]);
-  Serial.println(L_R_new[1]);
-  Serial.print("Old List");
-  Serial.println(L_R_old[0]);
-  Serial.println(L_R_old[1]);
+//  Serial.println("rotation");
+//  Serial.println(rotation);
+//  Serial.println("angle");
+//  Serial.println(angle*10);
+//  Serial.println("Left Total: ");
+//  Serial.print(leftTotal);
+//  Serial.println("Right Total: ");
+//  Serial.print(rightTotal);
+//  Serial.println("New List");
+//  Serial.println(L_R_new[0]);
+//  Serial.println(L_R_new[1]);
+//  Serial.print("Old List");
+//  Serial.println(L_R_old[0]);
+//  Serial.println(L_R_old[1]);
+//Serial.println(detector[0]);
   
 //  LCD screen shows data value
   lcd1.setCursor(13, 0);
@@ -178,7 +187,33 @@ void loop()
     lcd2.setCursor(0, 1);
     lcd2.print("            ");
       }
+   
+
+  for(int i = 0; i < 6; i++){ 
+
+    //left 
+    if(detector[0]==item_senario[i][0]){
+      if(detector[2]!=item_senario[i][1] and detector[2]!=item_senario[i][2] and detector[2]!="Empty"){
+        lcd1.setCursor(0, 1);
+        lcd1.print("Wrong Scenario");
+      }else{
+        lcd1.setCursor(0, 1);
+        lcd1.print("                ");
+      }
+     }
+    // Right
+     if(detector[1]==item_senario[i][0]){
+      if(detector[3]!=item_senario[i][1] and detector[3]!=item_senario[i][2] and detector[3]!="Empty"){
+        lcd2.setCursor(0, 1);
+        lcd2.print("Wrong Scenario");
+      }else{
+        lcd2.setCursor(0, 1);
+        lcd2.print("                ");
+      }
+     }
+  }
   
+ 
   if(L_R_old[0] == L_R_new[0] and L_R_old[1] == L_R_new[1]){
       Serial.print("Stop");
     }  
@@ -188,7 +223,7 @@ void loop()
   if(rotation<0){
        forward(angle*4);
      }
-  delay(1000);
+  delay(700);
 }
 
 
@@ -227,27 +262,40 @@ void setScores(){
   
   for (int i = 0; i < 13; i++) {
     if (senario_Database[i][0] == detector[2]) {
-
-      
       left_Senario_Score = senario_Database[i][1].toInt();
-      if(left_Senario_Score==13 or left_Senario_Score==36){
+      if(left_Senario_Score==15 or left_Senario_Score==35){
         left_Senario_Score=-left_Senario_Score;
-        }
-        
+        }        
       Serial.println("left_Senario_Score: ");
-      Serial.println(left_Senario_Score);
-
-      
+      Serial.println(left_Senario_Score);    
     }
     if(senario_Database[i][0] == detector[3]) {
       right_Senario_Score = senario_Database[i][1].toInt();
-       if(right_Senario_Score==13 or right_Senario_Score==36){
+       if(right_Senario_Score==15 or right_Senario_Score==35){
         right_Senario_Score=-right_Senario_Score;
         }
       Serial.println("right_Senario_Score: ");
       Serial.println(right_Senario_Score);
     }
-  }//for ends senario
+  }
+  //for ends senario
+  for(int i = 0; i < 6; i++){ 
+  //left 
+    if(detector[0]==item_senario[i][0]){
+      if(detector[2]!=item_senario[i][1] and detector[2]!=item_senario[i][2] and detector[2]!="Empty"){
+        left_Senario_Score=0;
+      }
+     }
+    // Right
+     if(detector[1]==item_senario[i][0]){
+      if(detector[3]!=item_senario[i][1] and detector[3]!=item_senario[i][2] and detector[3]!="Empty"){
+        right_Senario_Score=0;
+      }
+     }
+  }
+
+
+  
   //Add both item score and senario score
 
   
